@@ -1,41 +1,46 @@
 import sequelize from "../config/db.js";
 import { DataTypes } from "sequelize";
 
-const Subscription = sequelize.define("Subscription", {
+const Service = sequelize.define("Service", {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
     },
-    event_type: {
+    name: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         validate: {
             notEmpty: true
         }
     },
-    service_id: {
-        type: DataTypes.UUID,
+    base_url: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            isUrl: true,
+            notEmpty: true
+        }
+    },
+    secret: {
+        type: DataTypes.STRING,
         allowNull: false
     },
-    metadata: {
+    config: {
         type: DataTypes.JSONB,
         allowNull: true
     }
 }, {
-    timestamps: true,
-    indexes: [
-        {
-            fields: ["event_type"]
-        }
-    ]
+    timestamps: true
 });
 
 
-Subscription.associate = (models) => {
-    Subscription.belongsTo(models.Service, {
+
+Service.associate = (models) => {
+    Service.hasMany(models.Subscription, {
         foreignKey: "service_id"
     });
 };
 
-export default Subscription;
+export default Service;
