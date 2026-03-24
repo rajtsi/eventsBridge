@@ -1,6 +1,7 @@
 import express from "express";
 import sequelize from "./config/db.js";
 import "./models/Event.js";
+import "./models/Subscription.js";
 const app = express();
 
 app.use(express.json());
