@@ -19,7 +19,7 @@ const Service = sequelize.define("Service", {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-            isUrl: true,
+            // isUrl: true,
             notEmpty: true
         }
     },
