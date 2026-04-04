@@ -41,6 +41,10 @@ const Delivery = sequelize.define("Delivery", {
     next_retry_at: {
         type: DataTypes.DATE,
         allowNull: true
+    },
+    traceId: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 
 }, {

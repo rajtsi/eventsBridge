@@ -18,6 +18,10 @@ const Event = sequelize.define("Event", {
     source: {
         type: DataTypes.STRING,
         allowNull: true,
+    },
+    traceId: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     timestamps: true,
