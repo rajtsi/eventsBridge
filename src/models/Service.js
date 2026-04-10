@@ -7,6 +7,7 @@ const Service = sequelize.define("Service", {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
     },
+
     name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -15,31 +16,34 @@ const Service = sequelize.define("Service", {
             notEmpty: true
         }
     },
-    base_url: {
+
+    baseUrl: {
         type: DataTypes.STRING,
         allowNull: false,
-        validate: {
-            // isUrl: true,
-            notEmpty: true
-        }
+        field: "base_url"
     },
+
     secret: {
         type: DataTypes.STRING,
         allowNull: false
     },
+
     config: {
         type: DataTypes.JSONB,
         allowNull: true
     }
+
 }, {
-    timestamps: true
+    timestamps: true,
+    tableName: "Services"
 });
 
 
 
 Service.associate = (models) => {
     Service.hasMany(models.Subscription, {
-        foreignKey: "service_id"
+        foreignKey: "service_id",
+        as: "subscriptions"
     });
 };
 

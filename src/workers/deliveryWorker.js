@@ -1,4 +1,4 @@
-import Delivery from "../models/Delivery.js";
+import models from "../models/index.js";
 import { Op } from "sequelize";
 import logger from "../utils/logger.js";
 import callWebhook from "./callWebhooks.js";
@@ -6,12 +6,12 @@ import callWebhook from "./callWebhooks.js";
 async function processDeliveries() {
     logger.info("Worker running...", { data: "rajajajajajt" });
 
-    const deliveries = await Delivery.findAll({
+    const deliveries = await models.Delivery.findAll({
         where: {
             status: "pending",
             [Op.or]: [
-                { next_retry_at: null },
-                { next_retry_at: { [Op.lte]: new Date() } }
+                { nextRetryAt: null },
+                { nextRetryAt: { [Op.lte]: new Date() } }
             ]
         }
     });
