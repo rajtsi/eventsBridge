@@ -8,14 +8,16 @@ const Delivery = sequelize.define("Delivery", {
         defaultValue: DataTypes.UUIDV4,
     },
 
-    event_id: {
+    eventId: {
         type: DataTypes.UUID,
-        allowNull: false
+        allowNull: false,
+        field: "event_id"
     },
 
-    subscription_id: {
+    subscriptionId: {
         type: DataTypes.UUID,
-        allowNull: false
+        allowNull: false,
+        field: "subscription_id"
     },
 
     status: {
@@ -27,10 +29,11 @@ const Delivery = sequelize.define("Delivery", {
         }
     },
 
-    attempt_count: {
+    attemptCount: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: 0
+        defaultValue: 0,
+        field: "attempt_count"
     },
 
     response: {
@@ -38,25 +41,35 @@ const Delivery = sequelize.define("Delivery", {
         allowNull: true
     },
 
-    next_retry_at: {
+    nextRetryAt: {
         type: DataTypes.DATE,
-        allowNull: true
+        allowNull: true,
+        field: "next_retry_at"
     },
+
     traceId: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        field: "trace_id"
     }
 
 }, {
     timestamps: true,
-    indexes: [
-        {
-            fields: ["status"]
-        },
-        {
-            fields: ["next_retry_at"]
-        }
-    ]
+    tableName: "Deliveries"
 });
+
+
+
+Delivery.associate = (models) => {
+    Delivery.belongsTo(models.Event, {
+        foreignKey: "event_id",
+        as: "event"
+    });
+
+    Delivery.belongsTo(models.Subscription, {
+        foreignKey: "subscription_id",
+        as: "subscription"
+    });
+};
 
 export default Delivery;

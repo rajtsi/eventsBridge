@@ -1,5 +1,4 @@
-import Subscription from "../models/Subscription.js";
-import Service from "../models/Service.js";
+import models from "../models/index.js";
 import crypto from "crypto";
 import logger from "../utils/logger.js";
 import { asyncLocalStorage } from "../utils/als.js";
@@ -16,19 +15,19 @@ async function callWebhooks(deliveries) {
             async () => {
 
                 try {
-                    const sub = await Subscription.findByPk(delivery.subscription_id);
+                    const sub = await models.Subscription.findByPk(delivery.subscriptionId);
+
                     if (!sub) {
-                        logger.warn("Subscription not found", { deliveryId: delivery.id });
-                        return;
+                        throw new Error("Subscription not found");
                     }
 
-                    const service = await Service.findByPk(sub.service_id);
+                    const service = await models.Service.findByPk(sub.serviceId);
+
                     if (!service) {
-                        logger.warn("Service not found", { deliveryId: delivery.id });
-                        return;
+                        throw new Error("Service not found");
                     }
 
-                    const payload = { event: delivery.event_id };
+                    const payload = { event: delivery.eventId };
 
                     const signature = crypto
                         .createHmac("sha256", service.secret)
@@ -36,10 +35,10 @@ async function callWebhooks(deliveries) {
                         .digest("hex");
 
                     logger.info("Calling webhook", {
-                        url: service.base_url
+                        url: service.baseUrl
                     });
 
-                    const res = await fetch(service.base_url, {
+                    const res = await fetch(service.baseUrl, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -50,20 +49,17 @@ async function callWebhooks(deliveries) {
                         body: JSON.stringify(payload)
                     });
 
-                    if (res.ok) {
-                        logger.info("Delivery successful");
-
-                        await delivery.update({
-                            status: "success",
-                            response: { ok: true }
-                        });
-                    } else {
-                        throw new Error("Request failed");
+                    if (!res.ok) {
+                        throw new Error(`Request failed with status ${res.status}`);
                     }
 
-                } catch (err) {
+                    await delivery.update({
+                        status: "success",
+                        response: { ok: true }
+                    });
 
-                    const attempts = delivery.attempt_count + 1;
+                } catch (err) {
+                    const attempts = (delivery.attemptCount || 0) + 1;
 
                     logger.error("Delivery attempt failed", {
                         error: err.message
@@ -72,13 +68,13 @@ async function callWebhooks(deliveries) {
                     if (attempts >= 3) {
                         await delivery.update({
                             status: "failed",
-                            attempt_count: attempts,
+                            attemptCount: attempts,
                             response: { error: err.message }
                         });
                     } else {
                         await delivery.update({
-                            attempt_count: attempts,
-                            next_retry_at: new Date(Date.now() + 60000),
+                            attemptCount: attempts,
+                            nextRetryAt: new Date(Date.now() + 60000),
                             response: { error: err.message }
                         });
                     }

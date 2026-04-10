@@ -7,34 +7,37 @@ const Subscription = sequelize.define("Subscription", {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
     },
-    event_type: {
+
+    eventType: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
             notEmpty: true
-        }
+        },
+        field: "event_type"
     },
-    service_id: {
+
+    serviceId: {
         type: DataTypes.UUID,
-        allowNull: false
+        allowNull: false,
+        field: "service_id"
     },
+
     metadata: {
         type: DataTypes.JSONB,
         allowNull: true
     }
+
 }, {
     timestamps: true,
-    indexes: [
-        {
-            fields: ["event_type"]
-        }
-    ]
+    tableName: "Subscriptions"
 });
 
 
 Subscription.associate = (models) => {
     Subscription.belongsTo(models.Service, {
-        foreignKey: "service_id"
+        foreignKey: "service_id",
+        as: "service"
     });
 };
 

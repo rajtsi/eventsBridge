@@ -8,7 +8,7 @@ const addTraceId = winston.format((info) => {
     const store = asyncLocalStorage.getStore();
 
     if (store?.traceId) {
-        info.traceId = store.traceId;
+        info.trace_id = store.traceId;
     }
 
     if (store?.deliveryId) {
