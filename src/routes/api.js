@@ -1,13 +1,16 @@
 import express from "express";
 import models from "../models/index.js";
 import logger from "../utils/logger.js";
-
+import serviceRepo from "../repositories/serviceRepo.js";
+import subscriptionRepo from "../repositories/subscriptionRepo.js";
+import eventRepo from "../repositories/eventRepo.js";
+import deliveryRepo from "../repositories/deliveryRepo.js";
 const router = express.Router();
 
 router.post("/service", async (req, res) => {
     try {
         logger.info("Creating service", { body: req.body });
-        const service = await models.Service.create(req.body);
+        const service = await serviceRepo.create(req.body);
         logger.info("Service created", { serviceId: service.id });
         res.json(service);
     } catch (err) {
@@ -19,7 +22,7 @@ router.post("/service", async (req, res) => {
 router.post("/subscription", async (req, res) => {
     try {
         logger.info("Creating subscription", { body: req.body });
-        const sub = await models.Subscription.create(req.body);
+        const sub = await subscriptionRepo.create(req.body);
         logger.info("Subscription created", { subscriptionId: sub.id });
         res.json(sub);
     } catch (err) {
@@ -32,20 +35,16 @@ router.post("/event", async (req, res) => {
     try {
         logger.info("Creating event", { body: req.body });
 
-        const event = await models.Event.create({
-            ...req.body
-        });
+        const event = await eventRepo.create(req.body);
 
         logger.info("Event created", { eventId: event.id });
 
-        const subs = await models.Subscription.findAll({
-            where: { eventType: event.type }
-        });
+        const subs = await subscriptionRepo.getByEventType(event.type);
 
         logger.info("Fetched subscriptions", { count: subs.length });
 
         for (const sub of subs) {
-            await models.Delivery.create({
+            await deliveryRepo.create({
                 eventId: event.id,
                 subscriptionId: sub.id,
                 status: "pending",
