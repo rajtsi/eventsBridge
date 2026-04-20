@@ -1,2 +1,3 @@
-import processDeliveries from "./deliveryWorker.js";
-setInterval(processDeliveries, 5000);
+import "./deliveryWorker.js";
+
+console.log("Worker started...");

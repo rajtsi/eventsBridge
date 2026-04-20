@@ -87,4 +87,15 @@ async function processOneDelivery(delivery) {
         }
     );
 }
-export default { processOneDelivery };
+
+async function processOneDeliveryById(deliveryId) {
+    const delivery = await deliveryRepo.getById(deliveryId);
+
+    if (!delivery) {
+        throw new Error("Delivery not found");
+    }
+
+    return processOneDelivery(delivery);
+}
+
+export default { processOneDelivery, processOneDeliveryById };

@@ -6,7 +6,7 @@ import subscriptionRepo from "../repositories/subscriptionRepo.js";
 import eventRepo from "../repositories/eventRepo.js";
 import deliveryRepo from "../repositories/deliveryRepo.js";
 const router = express.Router();
-
+import deliveryQueue from "../queues/deliveryQueue.js";
 router.post("/service", async (req, res) => {
     try {
         logger.info("Creating service", { body: req.body });
@@ -44,11 +44,15 @@ router.post("/event", async (req, res) => {
         logger.info("Fetched subscriptions", { count: subs.length });
 
         for (const sub of subs) {
-            await deliveryRepo.create({
+            const delivery = await deliveryRepo.create({
                 eventId: event.id,
                 subscriptionId: sub.id,
                 status: "pending",
                 traceId: req.traceId
+            });
+
+            await deliveryQueue.add("deliver", {
+                deliveryId: delivery.id
             });
         }
 

@@ -21,8 +21,13 @@ async function update(delivery, data) {
     return delivery.update(data);
 }
 
+async function getById(id) {
+    return models.Delivery.findByPk(id);
+}
+
 export default {
     create,
     getPendingDeliveries,
-    update
+    update,
+    getById
 };
