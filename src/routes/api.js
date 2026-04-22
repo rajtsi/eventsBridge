@@ -53,6 +53,13 @@ router.post("/event", async (req, res) => {
 
             await deliveryQueue.add("deliver", {
                 deliveryId: delivery.id
+            }, {
+                attempts: 3,
+                backoff: {
+                    type: "exponential",
+                    delay: 1000
+                },
+                removeOnComplete: true
             });
         }
 
