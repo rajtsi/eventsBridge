@@ -26,6 +26,12 @@ const Subscription = sequelize.define("Subscription", {
     metadata: {
         type: DataTypes.JSONB,
         allowNull: true
+    },
+    isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+        field: "is_active"
     }
 
 }, {

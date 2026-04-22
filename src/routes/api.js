@@ -93,4 +93,34 @@ router.post("/webhook/test2", (req, res) => {
     res.json({ success: true });
 });
 
+
+router.patch("/subscription/:id/deactivate", async (req, res) => {
+    try {
+        const sub = await subscriptionRepo.getById(req.params.id);
+
+        if (!sub) {
+            return res.status(404).json({ error: "Subscription not found" });
+        }
+
+        if (!sub.isActive) {
+            return res.status(400).json({ error: "Already deactivated" });
+        }
+
+        sub.isActive = false;
+        await sub.save();
+
+        logger.info("Subscription deactivated", {
+            subscriptionId: sub.id
+        });
+
+        res.json({
+            id: sub.id,
+            isActive: sub.isActive
+        });
+
+    } catch (err) {
+        logger.error("Deactivate failed", { error: err.message });
+        res.status(500).json({ error: err.message });
+    }
+});
 export default router;

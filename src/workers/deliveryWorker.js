@@ -3,8 +3,13 @@ import IORedis from "ioredis";
 import deliveryService from "../services/deliveryService.js";
 import dlqQueue from "../queues/dlqQueue.js";
 import logger from "../utils/logger.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const connection = new IORedis({
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
     maxRetriesPerRequest: null
 });
 
@@ -23,7 +28,11 @@ const worker = new Worker(
     },
     {
         connection,
-        concurrency: 5
+        concurrency: Number(process.env.WORKER_CONCURRENCY) || 5,
+        limiter: {
+            max: Number(process.env.RATE_LIMIT_MAX) || 5,
+            duration: Number(process.env.RATE_LIMIT_DURATION) || 1000
+        }
     }
 );
 

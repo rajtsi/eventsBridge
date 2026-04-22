@@ -53,7 +53,8 @@ async function processOneDelivery(delivery, job) {
                             "Content-Type": "application/json",
                             "X-Signature": signature,
                             "X-Trace-Id": delivery.traceId,
-                            "X-Delivery-Id": delivery.id
+                            "X-Delivery-Id": delivery.id,
+                            "Idempotency-Key": delivery.eventId
                         },
                         body: JSON.stringify(payload),
                         signal: controller.signal

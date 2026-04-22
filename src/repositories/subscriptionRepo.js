@@ -6,7 +6,10 @@ async function create(data) {
 
 async function getByEventType(eventType) {
     return models.Subscription.findAll({
-        where: { eventType }
+        where: {
+            eventType,
+            isActive: true
+        }
     });
 }
 
