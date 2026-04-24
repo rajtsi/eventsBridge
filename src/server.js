@@ -1,6 +1,5 @@
 import app from "./app.js";
 import { initDB } from "./config/dbInit.js";
-import models from "./models/index.js";
 const PORT = 3000;
 
 async function start() {

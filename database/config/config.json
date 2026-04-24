@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "root",
-    "password": "root",
-    "database": "event_bridge_dev",
-    "host": "127.0.0.1",
+    "username": "user",
+    "password": "password",
+    "database": "eventbridge",
+    "host": "postgres",
     "dialect": "postgres"
   }
 }
