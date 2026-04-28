@@ -25,9 +25,26 @@ async function getById(id) {
     return models.Delivery.findByPk(id);
 }
 
+async function getAll({ page, limit, status, eventId }) {
+    const where = {};
+
+    if (status) where.status = status;
+    if (eventId) where.eventId = eventId;
+
+    const offset = (page - 1) * limit;
+
+    return models.Delivery.findAndCountAll({
+        where,
+        limit,
+        offset,
+        order: [["createdAt", "DESC"]],
+    });
+}
+
 export default {
     create,
     getPendingDeliveries,
     update,
-    getById
+    getById,
+    getAll
 };

@@ -1,5 +1,6 @@
 import { Worker } from "bullmq";
 import IORedis from "ioredis";
+import redisConnection from "../config/redis.js";
 import deliveryService from "../services/deliveryService.js";
 import dlqQueue from "../queues/dlqQueue.js";
 import logger from "../utils/logger.js";
@@ -16,7 +17,6 @@ const connection = new IORedis({
 const worker = new Worker(
     "delivery-queue",
     async (job) => {
-        console.log("Processing job", { id: job.id, name: job.name });
         logger.info("Processing job", {
             jobId: job.id,
             jobName: job.name
@@ -27,7 +27,7 @@ const worker = new Worker(
         await deliveryService.processOneDeliveryById(deliveryId, job);
     },
     {
-        connection,
+        connection: redisConnection,
         concurrency: Number(process.env.WORKER_CONCURRENCY) || 5,
         limiter: {
             max: Number(process.env.RATE_LIMIT_MAX) || 5,
