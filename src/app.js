@@ -6,7 +6,7 @@ import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import webhookRoutes from "./routes/webhookRoutes.js";
 import traceIdMiddleware from "./middlewares/traceId.js";
 import deliveryRoutes from "./routes/deliveryRoutes.js";
-
+import dlqRoutes from "./routes/dlqRoutes.js";
 const app = express();
 
 app.use(express.json());
@@ -21,6 +21,7 @@ app.use("/services", serviceRoutes);
 app.use("/subscriptions", subscriptionRoutes);
 app.use("/webhook", webhookRoutes);
 app.use("/deliveries", deliveryRoutes);
+app.use("/dlq", dlqRoutes);
 app.use((req, res) => {
     res.status(404).json({ error: "Route not found" });
 });

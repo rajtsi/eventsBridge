@@ -19,23 +19,28 @@ const create = async (req, res) => {
 
 const getSubscriptions = async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
-        logger.info("Fetching subscriptions", { page: Number(page), limit: Number(limit) });
+        const {
+            page = 1,
+            limit = 10,
+            eventType,
+            serviceId
+        } = req.query;
 
         const data = await subscriptionService.getSubscriptions({
             page: Number(page),
-            limit: Number(limit)
+            limit: Number(limit),
+            eventType,
+            serviceId
         });
 
         res.json({
             count: data.count,
-            page: Number(page),
-            limit: Number(limit),
+            page,
+            limit,
             rows: data.rows
         });
 
     } catch (err) {
-        logger.error("Fetch subscriptions failed", { error: err.message });
         res.status(500).json({ error: err.message });
     }
 };

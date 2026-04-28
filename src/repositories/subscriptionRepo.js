@@ -4,10 +4,16 @@ async function getById(id) {
     return models.Subscription.findByPk(id);
 }
 
-async function getAll({ page, limit }) {
+async function getAll({ page, limit, eventType, serviceId }) {
+    const where = {};
+
+    if (eventType) where.eventType = eventType;
+    if (serviceId) where.serviceId = serviceId;
+
     const offset = (page - 1) * limit;
 
     return models.Subscription.findAndCountAll({
+        where,
         limit,
         offset,
         order: [["createdAt", "DESC"]],
