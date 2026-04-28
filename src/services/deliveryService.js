@@ -5,7 +5,9 @@ import deliveryRepo from "../repositories/deliveryRepo.js";
 import crypto from "crypto";
 import logger from "../utils/logger.js";
 import { asyncLocalStorage } from "../utils/als.js";
-
+import eventRepo from "../repositories/eventRepo.js";
+import dotenv from "dotenv";
+dotenv.config();
 async function processOneDelivery(delivery, job) {
     await asyncLocalStorage.run(
         {
@@ -26,7 +28,16 @@ async function processOneDelivery(delivery, job) {
                     throw new Error("Service not found");
                 }
 
-                const payload = { event: delivery.eventId };
+                const event = await eventRepo.getById(delivery.eventId);
+                if (!event) {
+                    throw new Error("Event not found");
+                }
+
+                const payload = {
+                    id: event.id,
+                    type: event.type,
+                    data: event.payload
+                };
 
                 const signature = crypto
                     .createHmac("sha256", service.secret)
@@ -35,16 +46,22 @@ async function processOneDelivery(delivery, job) {
 
                 logger.info("Calling webhook", {
                     deliveryId: delivery.id,
+                    eventId: event.id,
                     attempt: job.attemptsMade + 1,
                     url: service.baseUrl
                 });
 
+                logger.info("Using clientId", {
+                    clientId: process.env.CLIENT_ID
+                });
 
 
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 5000);
 
                 let res;
+
+
 
                 try {
                     res = await fetch(service.baseUrl, {
@@ -54,10 +71,18 @@ async function processOneDelivery(delivery, job) {
                             "X-Signature": signature,
                             "X-Trace-Id": delivery.traceId,
                             "X-Delivery-Id": delivery.id,
-                            "Idempotency-Key": delivery.eventId
+                            "Idempotency-Key": `${delivery.eventId}:${service.name}`,
+                            "X-Client-Id": process.env.CLIENT_ID
                         },
                         body: JSON.stringify(payload),
                         signal: controller.signal
+                    });
+                    const text = await res.text();
+
+                    logger.info("Webhook response", {
+                        deliveryId: delivery.id,
+                        status: res.status,
+                        body: text
                     });
 
                     if (!res.ok) {
@@ -114,5 +139,12 @@ async function processOneDeliveryById(deliveryId, job) {
 
     return processOneDelivery(delivery, job);
 }
+const getDeliveries = (params) => {
+    return deliveryRepo.getAll(params);
+};
 
-export default { processOneDelivery, processOneDeliveryById };
+const getById = (id) => {
+    return deliveryRepo.getById(id);
+};
+
+export default { processOneDelivery, processOneDeliveryById, getDeliveries, getById };

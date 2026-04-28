@@ -1,9 +1,10 @@
 {
   "development": {
-    "username": "user",
+    "username": "rajatsingh",
     "password": "password",
     "database": "eventbridge",
-    "host": "postgres",
-    "dialect": "postgres"
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "logging": false
   }
 }

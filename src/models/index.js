@@ -3,12 +3,16 @@ import Event from "./Event.js";
 import Service from "./Service.js";
 import Subscription from "./Subscription.js";
 import Delivery from "./Delivery.js";
+import WebhookClient from "./webhookClient.js";
+import IdempotencyKey from "./idempotencyKey.js";
 
 const models = {
     Event,
     Service,
     Subscription,
-    Delivery
+    Delivery,
+    WebhookClient,
+    IdempotencyKey,
 };
 
 
