@@ -5,6 +5,7 @@ import Subscription from "./Subscription.js";
 import Delivery from "./Delivery.js";
 import WebhookClient from "./webhookClient.js";
 import IdempotencyKey from "./idempotencyKey.js";
+import EventType from "./EventType.js";
 
 const models = {
     Event,
@@ -13,6 +14,7 @@ const models = {
     Delivery,
     WebhookClient,
     IdempotencyKey,
+    EventType
 };
 
 

@@ -1,11 +1,9 @@
 import dlqQueue from "../queues/dlqQueue.js";
 import deliveryQueue from "../queues/deliveryQueue.js";
 import deliveryRepo from "../repositories/deliveryRepo.js";
-import { Op } from "sequelize";
-
+import logger from "../utils/logger.js";
 /**
  * GET /dlq
- * Paginated list of DLQ jobs
  */
 const getJobs = async (req, res) => {
     try {
@@ -24,9 +22,9 @@ const getJobs = async (req, res) => {
         const rows = jobs.map((job) => ({
             id: job.id,
             deliveryId: job.data?.deliveryId,
-            attempts: job.attemptsMade,
-            failedReason: job.failedReason,
-            status: job.finishedOn ? "completed" : "failed",
+            attempts: job.data?.attempts,
+            error: job.data?.error,
+            failedAt: job.data?.failedAt,
             createdAt: job.timestamp
         }));
 
@@ -53,7 +51,6 @@ const getJobs = async (req, res) => {
 
 /**
  * POST /dlq/:id/retry
- * Retry job from DLQ
  */
 const retryJob = async (req, res) => {
     try {
@@ -62,32 +59,26 @@ const retryJob = async (req, res) => {
         if (!job) {
             return res.status(404).json({ error: "Job not found" });
         }
-
+        logger.info("DLQ Job data:", job.data);
         const { deliveryId } = job.data;
+        logger.info("Extracted deliveryId:", deliveryId);
 
         const delivery = await deliveryRepo.getById(deliveryId);
         if (!delivery) {
             return res.status(404).json({ error: "Delivery not found" });
         }
 
-        // prevent duplicate retry (atomic)
-        const updated = await deliveryRepo.updateWhere(
-            { id: deliveryId, status: { [Op.ne]: "pending" } },
-            { status: "pending", attemptCount: 0 }
-        );
+        // ✅ reset delivery state
+        await deliveryRepo.updateById(deliveryId, {
+            status: "pending",
+            attemptCount: 0
+        });
 
-        if (!updated) {
-            return res.status(409).json({
-                error: "Delivery already in progress"
-            });
-        }
-
-        // enqueue again
+        // ✅ DO NOT SET jobId
         await deliveryQueue.add(
             "deliver",
             { deliveryId },
             {
-                jobId: deliveryId,
                 attempts: 3,
                 backoff: {
                     type: "exponential",
@@ -98,7 +89,7 @@ const retryJob = async (req, res) => {
             }
         );
 
-        // remove from DLQ after enqueue
+        // ✅ remove DLQ job AFTER enqueue
         await job.remove();
 
         res.json({ message: "Retry successful" });

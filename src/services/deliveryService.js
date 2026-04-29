@@ -97,7 +97,7 @@ async function processOneDelivery(delivery, job) {
                     throw new Error(`Request failed with status ${res.status}`);
                 }
 
-                await deliveryRepo.update(delivery, {
+                await deliveryRepo.updateInstance(delivery, {
                     status: "success",
                     attemptCount: job.attemptsMade + 1,
                     response: { ok: true }
@@ -118,7 +118,7 @@ async function processOneDelivery(delivery, job) {
                     error: err.message
                 });
 
-                await deliveryRepo.update(delivery, {
+                await deliveryRepo.updateInstance(delivery, {
                     status: "failed",
                     attemptCount: job.attemptsMade + 1,
                     response: { error: err.message }

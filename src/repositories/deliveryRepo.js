@@ -16,11 +16,6 @@ async function getPendingDeliveries() {
         }
     });
 }
-
-async function update(delivery, data) {
-    return delivery.update(data);
-}
-
 async function getById(id) {
     return models.Delivery.findByPk(id);
 }
@@ -41,10 +36,24 @@ async function getAll({ page, limit, status, eventId }) {
     });
 }
 
+
+//  update using INSTANCE
+async function updateInstance(delivery, data) {
+    return delivery.update(data);
+}
+
+// update using ID (THIS WAS MISSING)
+async function updateById(id, data) {
+    return models.Delivery.update(data, {
+        where: { id }
+    });
+}
+
 export default {
     create,
     getPendingDeliveries,
-    update,
+    updateInstance,
+    updateById,
     getById,
     getAll
 };
