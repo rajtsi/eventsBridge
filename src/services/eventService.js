@@ -64,9 +64,13 @@ const createEvent = async (data, traceId) => {
 const getEvents = async (filters) => {
     return eventRepo.getEvents(filters);
 };
+const getEventById = async (id) => {
+    return eventRepo.getByIdWithDeliveries(id);
+}
 
 
 export default {
     createEvent,
-    getEvents
+    getEvents,
+    getEventById
 };

@@ -3,6 +3,8 @@ import Dashboard from "./pages/Dashboard";
 import EventsPage from "./pages/EventsPage";
 import DeliveriesPage from "./pages/DeliveriesPage";
 import DLQPage from "./pages/DLQPage";
+import EventDetail from "./pages/EventDetail";
+
 
 function Sidebar() {
   const location = useLocation();
@@ -21,7 +23,7 @@ function Sidebar() {
         <Link to="/" className={linkClass("/")}>Dashboard</Link>
         <Link to="/events" className={linkClass("/events")}>Events</Link>
         <Link to="/deliveries" className={linkClass("/deliveries")}>Deliveries</Link>
-        <Link to="/dlq" className={linkClass("/dlq")}>DLQ</Link>
+        <Link to="/dlq" className={linkClass("/dlq")}>Failed Jobs</Link>
       </nav>
     </div>
   );
@@ -39,6 +41,7 @@ export default function App() {
             <Route path="/events" element={<EventsPage />} />
             <Route path="/deliveries" element={<DeliveriesPage />} />
             <Route path="/dlq" element={<DLQPage />} />
+            <Route path="/events/:id" element={<EventDetail />} />
           </Routes>
         </div>
       </div>

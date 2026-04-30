@@ -4,18 +4,23 @@ async function getById(id) {
     return models.Subscription.findByPk(id);
 }
 
-async function getAll({ page, limit, eventType, serviceId }) {
-    const where = {};
+async function getAll({ eventType, serviceId }) {
+    const where = {
+        isActive: true
+    };
 
     if (eventType) where.eventType = eventType;
     if (serviceId) where.serviceId = serviceId;
 
-    const offset = (page - 1) * limit;
-
-    return models.Subscription.findAndCountAll({
+    return models.Subscription.findAll({
         where,
-        limit,
-        offset,
+        include: [
+            {
+                model: models.Service,
+                as: "service",
+                attributes: ["id", "name", "baseUrl"]
+            }
+        ],
         order: [["createdAt", "DESC"]],
     });
 }

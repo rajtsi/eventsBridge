@@ -20,11 +20,19 @@ async function getById(id) {
     return models.Delivery.findByPk(id);
 }
 
-async function getAll({ page, limit, status, eventId }) {
+
+async function getAll({ page, limit, status, eventId, from, to }) {
     const where = {};
 
     if (status) where.status = status;
     if (eventId) where.eventId = eventId;
+
+
+    if (from && to) {
+        where.createdAt = {
+            [Op.between]: [from, to]
+        };
+    }
 
     const offset = (page - 1) * limit;
 
