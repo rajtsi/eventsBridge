@@ -202,12 +202,30 @@ Manual Retry → Success
 
 ## 📸 Screenshots
 
-> Add screenshots of:
->
+
 > * Dashboard
+<img width="2940" height="1846" alt="image" src="https://github.com/user-attachments/assets/cd9849fd-6890-41fb-8502-7af6ddf3a823" />
+
+
 > * Event creation
-> * DLQ retry
-> * Deliveries
+    <img width="2940" height="1846" alt="image" src="https://github.com/user-attachments/assets/193cb44c-d794-4fe9-ae5f-5837545ea5c3" />
+
+>   <img width="2940" height="1846" alt="image" src="https://github.com/user-attachments/assets/1ff30a42-6f5a-48ec-9daf-0456f9138e2a" />
+
+>   <img width="2940" height="1846" alt="image" src="https://github.com/user-attachments/assets/4a700fb0-b14b-4ef3-895b-04dbc5115957" />
+
+
+> * Events List
+   <img width="2940" height="1846" alt="image" src="https://github.com/user-attachments/assets/7bc07872-4230-46fa-9f39-24cb4e161894" />
+
+
+> * Deliveries List
+     <img width="2940" height="1846" alt="image" src="https://github.com/user-attachments/assets/3138b5cd-1f3d-4e53-a8d9-621fa5449caa" />
+
+
+> * Failed Jobs With Retry button
+   <img width="2940" height="1846" alt="image" src="https://github.com/user-attachments/assets/490291d2-f4b9-4e70-9e1f-5f51acdda5f3" />
+
 
 ---
 
