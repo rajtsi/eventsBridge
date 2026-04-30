@@ -1,36 +1,30 @@
 #!/bin/bash
 
-echo "Starting EventBridge..."
+echo "🚀 Starting EventBridge (LOCAL)"
 
-cleanup() {
-  echo "Stopping containers..."
-  docker-compose stop
-  exit 0
-}
+echo "📦 Running migrations..."
+npm run migrate
 
-trap cleanup SIGINT
+echo "🟢 Starting backend..."
+npm run dev &
+BACKEND_PID=$!
 
-# This handles create OR start automatically
-docker-compose up -d
+echo "🟡 Starting worker..."
+npm run start_worker &
+WORKER_PID=$!
 
-echo "Waiting for Postgres..."
+echo "⏳ Waiting for backend..."
 
-RETRIES=10
-until docker-compose exec -T postgres pg_isready -U user > /dev/null 2>&1
-do
-  echo "Postgres not ready yet..."
+until curl -s http://localhost:3000 > /dev/null; do
   sleep 2
-  RETRIES=$((RETRIES-1))
-
-  if [ $RETRIES -le 0 ]; then
-    echo "Postgres failed to start"
-    exit 1
-  fi
 done
 
-echo "Running migrations..."
-docker-compose exec -T api npx sequelize-cli db:migrate
+echo "📊 Running setup..."
+npm run setup
 
-echo "System is ready. Press Ctrl+C to stop."
+echo "🎨 Starting frontend..."
+cd event-dashboard && npm run dev &
 
-docker-compose logs -f
+echo "✅ All services started"
+
+wait

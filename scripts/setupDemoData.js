@@ -70,14 +70,6 @@ const services = [
     },
 ];
 
-// ---------------- CLIENTS ----------------
-const clients = [
-    { clientId: "companyA", service: "payment", secret: "payment-secret" },
-    { clientId: "companyA", service: "email", secret: "email-secret" },
-    { clientId: "companyA", service: "analytics", secret: "analytics-secret" },
-    { clientId: "companyA", service: "notification", secret: "notification-secret" },
-];
-
 // ---------------- MAIN ----------------
 const run = async () => {
     try {
@@ -88,9 +80,9 @@ const run = async () => {
         for (const e of eventTypes) {
             try {
                 const res = await API.post("/event-types", e);
-                console.log(`✔ Created eventType: ${e.name}`, res.data.id);
-            } catch (err) {
-                console.log(`⚠️ EventType exists: ${e.name}`);
+                console.log(`✔ Created: ${e.name}`, res.data.id);
+            } catch {
+                console.log(`⚠️ Exists: ${e.name}`);
             }
         }
 
@@ -99,14 +91,14 @@ const run = async () => {
         const serviceMap = {};
 
         for (const s of services) {
-            let service = null;
+            let service;
 
             try {
                 const res = await API.post("/services", s);
-                service = res.data.data;   // 🔥 FIXED
-                console.log(`✔ Created service: ${s.name} → ${service.id}`);
-            } catch (err) {
-                console.log(`⚠️ Service exists, fetching: ${s.name}`);
+                service = res.data.data;
+                console.log(`✔ Created: ${s.name} → ${service.id}`);
+            } catch {
+                console.log(`⚠️ Exists, fetching: ${s.name}`);
 
                 const all = await API.get("/services");
                 const list = all.data.rows || all.data.data || all.data;
@@ -117,11 +109,7 @@ const run = async () => {
                     throw new Error(`❌ Cannot resolve service: ${s.name}`);
                 }
 
-                console.log(`✔ Found service: ${s.name} → ${service.id}`);
-            }
-
-            if (!service?.id) {
-                throw new Error(`❌ Invalid service ID for ${s.name}`);
+                console.log(`✔ Found: ${s.name} → ${service.id}`);
             }
 
             serviceMap[s.name] = service;
@@ -133,38 +121,34 @@ const run = async () => {
             const service = serviceMap[serviceName];
 
             for (const event of eventTypes) {
-                console.log(`→ Linking ${event.name} → ${service.name} (${service.id})`);
-
                 try {
                     await API.post("/subscriptions", {
                         eventType: event.name,
                         serviceId: service.id,
                     });
 
-                    console.log(`✔ Subscribed: ${event.name} → ${service.name}`);
-                } catch (err) {
-                    console.log(
-                        `⚠️ Subscription exists or failed: ${event.name} → ${service.name}`,
-                        err.response?.data || err.message
-                    );
+                    console.log(`✔ ${event.name} → ${service.name}`);
+                } catch {
+                    console.log(`⚠️ Exists: ${event.name} → ${service.name}`);
                 }
             }
         }
 
-        // ---------- WEBHOOK CLIENTS ----------
-        console.log("\n📌 Creating Webhook Clients...");
-        for (const c of clients) {
-            try {
-                await API.post("/webhook-clients", c);
-                console.log(`✔ Client created: ${c.clientId} (${c.service})`);
-            } catch (err) {
-                console.log(
-                    `⚠️ Client exists: ${c.clientId} (${c.service})`
-                );
-            }
-        }
+        // ---------- CLIENTS (MANUAL) ----------
+        console.log("\n📌 Webhook Clients (Manual Step)");
+        console.log(`
+            Run this SQL in DB:
+
+           INSERT INTO "WebhookClients" ("id", "clientId", "service", "secret", "createdAt", "updatedAt")
+            VALUES
+           (gen_random_uuid(), 'companyA', 'payment', 'payment-secret', NOW(), NOW()),
+            (gen_random_uuid(), 'companyA', 'email', 'email-secret', NOW(), NOW()),
+            (gen_random_uuid(), 'companyA', 'analytics', 'analytics-secret', NOW(), NOW()),
+             (gen_random_uuid(), 'companyA', 'notification', 'notification-secret', NOW(), NOW());
+            `);
 
         console.log("\n🎉 SETUP COMPLETE");
+
     } catch (err) {
         console.error("\n❌ SETUP FAILED:", err.response?.data || err.message);
     }

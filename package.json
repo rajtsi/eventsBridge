@@ -7,7 +7,8 @@
     "dev": "NODE_ENV=development nodemon src/server.js",
     "start": "NODE_ENV=production node src/server.js",
     "start_worker": "nodemon src/workers/runWorker.js",
-    "setup": "node scripts/setupDemoData.js"
+    "setup": "node scripts/setupDemoData.js",
+    "migrate": "sequelize-cli db:migrate"
   },
   "keywords": [],
   "author": "rajatsingh.1634@gmail.com,akash06knp21@gmail.com",
