@@ -6,8 +6,7 @@ import crypto from "crypto";
 import logger from "../utils/logger.js";
 import { asyncLocalStorage } from "../utils/als.js";
 import eventRepo from "../repositories/eventRepo.js";
-import dotenv from "dotenv";
-dotenv.config();
+import "../config/env.js";
 async function processOneDelivery(delivery, job) {
     await asyncLocalStorage.run(
         {

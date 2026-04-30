@@ -4,9 +4,7 @@ import redisConnection from "../config/redis.js";
 import deliveryService from "../services/deliveryService.js";
 import dlqQueue from "../queues/dlqQueue.js";
 import logger from "../utils/logger.js";
-import dotenv from "dotenv";
-
-dotenv.config();
+import "../config/env.js";
 
 const connection = new IORedis({
     host: process.env.REDIS_HOST,

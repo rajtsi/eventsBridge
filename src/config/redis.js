@@ -1,7 +1,5 @@
 import IORedis from "ioredis";
-import dotenv from "dotenv";
-
-dotenv.config();
+import "../config/env.js";
 
 const redisConnection = new IORedis({
     host: process.env.REDIS_HOST,
