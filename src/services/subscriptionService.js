@@ -26,8 +26,8 @@ const create = async (data) => {
     return subscriptionRepo.create(data);
 };
 
-const getSubscriptions = async ({ page, limit }) => {
-    return subscriptionRepo.getAll({ page, limit });
+const getSubscriptions = async ({ eventType, serviceId }) => {
+    return subscriptionRepo.getAll({ eventType, serviceId });
 };
 
 const deactivate = async (id) => {

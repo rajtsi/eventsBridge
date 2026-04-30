@@ -7,6 +7,12 @@ function getTimeRange(window) {
     if (window === "1h") {
         return new Date(now.getTime() - 60 * 60 * 1000);
     }
+    if (window === "24h") {
+        return new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    }
+    if (window === "7d") {
+        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    }
 
     return new Date(now.getTime() - 5 * 60 * 1000);
 }
